@@ -86,7 +86,7 @@ def tensor_ones(shape, dtype=tf.float32, name='t3f_tensor_ones'):
   num_dims = shape.size
   tt_rank = np.ones(num_dims + 1)
 
-  with tf.name_scope(name):
+  with tf.compat.v1.name_scope(name):
     tt_cores = num_dims * [None]
     for i in range(num_dims):
       curr_core_shape = (1, shape[i], 1)
@@ -112,7 +112,7 @@ def tensor_zeros(shape, dtype=tf.float32, name='t3f_tensor_zeros'):
   num_dims = shape.size
   tt_rank = np.ones(num_dims + 1)
   tt_cores = num_dims * [None]
-  with tf.name_scope(name):
+  with tf.compat.v1.name_scope(name):
     for i in range(num_dims):
       curr_core_shape = (1, shape[i], 1)
       tt_cores[i] = tf.zeros(curr_core_shape, dtype=dtype)
@@ -140,7 +140,7 @@ def eye(shape, dtype=tf.float32, name='t3f_eye'):
   num_dims = shape.size
   tt_ranks = np.ones(num_dims + 1)
 
-  with tf.name_scope(name):
+  with tf.compat.v1.name_scope(name):
     tt_cores = num_dims * [None]
     for i in range(num_dims):
       curr_core_shape = (1, shape[i], shape[i], 1)
@@ -184,7 +184,7 @@ def matrix_ones(shape, dtype=tf.float32, name='t3f_matrix_ones'):
   num_dims = shape[0].size
   tt_rank = np.ones(shape[0].size + 1)
 
-  with tf.name_scope(name):
+  with tf.compat.v1.name_scope(name):
     tt_cores = [None] * num_dims
     for i in range(num_dims):
       curr_core_shape = (1, shape[0][i], shape[1][i], 1)
@@ -226,7 +226,7 @@ def matrix_zeros(shape, dtype=tf.float32, name='t3f_matrix_zeros'):
   num_dims = shape[0].size
   tt_rank = np.ones(shape[0].size + 1)
 
-  with tf.name_scope(name):
+  with tf.compat.v1.name_scope(name):
     tt_cores = [None] * num_dims
     for i in range(num_dims):
       curr_core_shape = (1, shape[0][i], shape[1][i], 1)
@@ -267,10 +267,10 @@ def tensor_with_random_cores(shape, tt_rank=2, mean=0., stddev=1.,
 
   tt_rank = tt_rank.astype(int)
   tt_cores = [None] * num_dims
-  with tf.name_scope(name):
+  with tf.compat.v1.name_scope(name):
     for i in range(num_dims):
       curr_core_shape = (tt_rank[i], shape[i], tt_rank[i + 1])
-      tt_cores[i] = tf.random_normal(curr_core_shape, mean=mean, stddev=stddev,
+      tt_cores[i] = tf.random.normal(curr_core_shape, mean=mean, stddev=stddev,
                                      dtype=dtype)
 
     return TensorTrain(tt_cores, shape, tt_rank)
@@ -309,10 +309,10 @@ def tensor_batch_with_random_cores(shape, tt_rank=2, batch_size=1,
     tt_rank = np.append(tt_rank, 1)
   tt_rank = tt_rank.astype(int)
   tt_cores = [None] * num_dims
-  with tf.name_scope(name):
+  with tf.compat.v1.name_scope(name):
     for i in range(num_dims):
       curr_core_shape = (batch_size, tt_rank[i], shape[i], tt_rank[i + 1])
-      tt_cores[i] = tf.random_normal(curr_core_shape, mean=mean, stddev=stddev,
+      tt_cores[i] = tf.random.normal(curr_core_shape, mean=mean, stddev=stddev,
                                      dtype=dtype)
 
     return TensorTrainBatch(tt_cores, shape, tt_rank, batch_size)
@@ -364,11 +364,11 @@ def matrix_with_random_cores(shape, tt_rank=2, mean=0., stddev=1.,
 
   tt_rank = tt_rank.astype(int)
   tt_cores = [None] * num_dims
-  with tf.name_scope(name):
+  with tf.compat.v1.name_scope(name):
     for i in range(num_dims):
       curr_core_shape = (tt_rank[i], shape[0][i], shape[1][i],
                          tt_rank[i + 1])
-      tt_cores[i] = tf.random_normal(curr_core_shape, mean=mean, stddev=stddev,
+      tt_cores[i] = tf.random.normal(curr_core_shape, mean=mean, stddev=stddev,
                                      dtype=dtype)
 
     return TensorTrain(tt_cores, shape, tt_rank)
@@ -422,11 +422,11 @@ def matrix_batch_with_random_cores(shape, tt_rank=2, batch_size=1,
   shape = shape.astype(int)
   tt_rank = tt_rank.astype(int)
   tt_cores = [None] * num_dims
-  with tf.name_scope(name):
+  with tf.compat.v1.name_scope(name):
     for i in range(num_dims):
       curr_core_shape = (batch_size, tt_rank[i], shape[0][i], shape[1][i],
                          tt_rank[i + 1])
-      tt_cores[i] = tf.random_normal(curr_core_shape, mean=mean, stddev=stddev,
+      tt_cores[i] = tf.random.normal(curr_core_shape, mean=mean, stddev=stddev,
                                      dtype=dtype)
 
     return TensorTrainBatch(tt_cores, shape, tt_rank, batch_size)
@@ -454,7 +454,7 @@ def ones_like(tt, name='t3f_ones_like'):
     # I guess variables=tt.tt_cores is not needed here since the output of
     # the function doesn't depend on the values of the TT-cores, only on their
     # shapes etc. But I'm not 100% sure.
-    with tf.name_scope(name):
+    with tf.compat.v1.name_scope(name):
       if tt.is_tt_matrix():
         return matrix_ones(shape, dtype=tt.dtype)
       else:
@@ -483,7 +483,7 @@ def zeros_like(tt, name='t3f_zeros_like'):
     # I guess variables=tt.tt_cores is not needed here since the output of
     # the function doesn't depend on the values of the TT-cores, only on their
     # shapes etc. But I'm not 100% sure.
-    with tf.name_scope(name):
+    with tf.compat.v1.name_scope(name):
       if tt.is_tt_matrix():
         return matrix_zeros(shape, dtype=tt.dtype)
       else:
@@ -535,7 +535,7 @@ def random_tensor(shape, tt_rank=2, mean=0., stddev=1., dtype=tf.float32,
   cr_exponent = -1.0 / (2 * num_dims)
   var = np.prod(tt_rank ** cr_exponent)
   core_stddev = stddev ** (1.0 / num_dims) * var
-  with tf.name_scope(name):
+  with tf.compat.v1.name_scope(name):
     tt = tensor_with_random_cores(shape, tt_rank=tt_rank, stddev=core_stddev,
                                   dtype=dtype)
 
@@ -588,7 +588,7 @@ def random_tensor_batch(shape, tt_rank=2, batch_size=1, mean=0., stddev=1.,
   cr_exponent = -1.0 / (2 * num_dims)
   var = np.prod(tt_rank ** cr_exponent)
   cr_stddev = stddev ** (1.0 / num_dims) * var
-  with tf.name_scope(name):
+  with tf.compat.v1.name_scope(name):
     tt = tensor_batch_with_random_cores(shape, tt_rank=tt_rank, stddev=cr_stddev,
                                         batch_size=batch_size, dtype=dtype)
 
@@ -660,7 +660,7 @@ def random_matrix(shape, tt_rank=2, mean=0., stddev=1.,
   cr_exponent = -1.0 / (2 * num_dims)
   var = np.prod(tt_rank ** cr_exponent)
   core_stddev = stddev ** (1.0 / num_dims) * var
-  with tf.name_scope(name):
+  with tf.compat.v1.name_scope(name):
     tt = matrix_with_random_cores(shape, tt_rank=tt_rank, stddev=core_stddev,
                                   dtype=dtype)
 
@@ -727,7 +727,7 @@ def random_matrix_batch(shape, tt_rank=2, batch_size=1, mean=0., stddev=1.,
   cr_exponent = -1.0 / (2 * num_dims)
   var = np.prod(tt_rank ** cr_exponent)
   core_stddev = stddev ** (1.0 / num_dims) * var
-  with tf.name_scope(name):
+  with tf.compat.v1.name_scope(name):
     tt = matrix_batch_with_random_cores(shape, tt_rank=tt_rank,
                                         stddev=core_stddev,
                                         batch_size=batch_size,
@@ -776,7 +776,7 @@ def glorot_initializer(shape, tt_rank=2, dtype=tf.float32,
   n_out = np.prod(shape[1])
   lamb = 2.0 / (n_in + n_out)
 
-  with tf.name_scope(name):
+  with tf.compat.v1.name_scope(name):
     return random_matrix(shape, tt_rank=tt_rank, stddev=np.sqrt(lamb),
                          dtype=dtype)
 
@@ -817,7 +817,7 @@ def he_initializer(shape, tt_rank=2, dtype=tf.float32,
   n_in = np.prod(shape[0])
   lamb = 2.0 / n_in
 
-  with tf.name_scope(name):
+  with tf.compat.v1.name_scope(name):
     return random_matrix(shape, tt_rank=tt_rank, stddev=np.sqrt(lamb),
                          dtype=dtype)
 
@@ -857,6 +857,6 @@ def lecun_initializer(shape, tt_rank=2, dtype=tf.float32,
   _validate_input_parameters(is_tensor=False, shape=shape, tt_rank=tt_rank)
   n_in = np.prod(shape[0])
   lamb = 1.0 / n_in
-  with tf.name_scope(name):
+  with tf.compat.v1.name_scope(name):
     return random_matrix(shape, tt_rank=tt_rank, stddev=np.sqrt(lamb),
                          dtype=dtype)

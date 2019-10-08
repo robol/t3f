@@ -28,7 +28,7 @@ def add_n(tt_objects, max_tt_rank, name='t3f_approximate_add_n'):
   """
   list_of_cores_lists = [tt.tt_cores for tt in tt_objects]
   all_cores = tuple(itertools.chain.from_iterable(list_of_cores_lists))
-  with tf.name_scope(name, values=all_cores):
+  with tf.compat.v1.name_scope(name, values=all_cores):
     prev_level = tt_objects
     while len(prev_level) > 1:
       next_level = []
@@ -80,7 +80,7 @@ def reduce_sum_batch(tt_batch, max_tt_rank, coef=None,
   all_tensors = tt_batch.tt_cores
   if coef is not None:
     all_tensors += (coef, )
-  with tf.name_scope(name, values=all_tensors):
+  with tf.compat.v1.name_scope(name, values=all_tensors):
     is_batch_output = False
     if coef is not None:
       coef = tf.convert_to_tensor(coef, dtype=tt_batch.dtype)

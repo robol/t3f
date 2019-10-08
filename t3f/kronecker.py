@@ -42,7 +42,7 @@ def determinant(kron_a, name='t3f_kronecker_determinant'):
                        'matrices (tt-cores must be square)')
       
   is_batch = isinstance(kron_a, TensorTrainBatch)
-  with tf.name_scope(name, values=kron_a.tt_cores):
+  with tf.compat.v1.name_scope(name, values=kron_a.tt_cores):
     pows = tf.cast(tf.reduce_prod(i_shapes), kron_a.dtype)
     cores = kron_a.tt_cores
     det = 1
@@ -95,7 +95,7 @@ def slog_determinant(kron_a, name='t3f_kronecker_slog_determinant'):
                        'matrices (tt-cores must be square)')
 
   is_batch = isinstance(kron_a, TensorTrainBatch)
-  with tf.name_scope(name, values=kron_a.tt_cores):
+  with tf.compat.v1.name_scope(name, values=kron_a.tt_cores):
     pows = tf.cast(tf.reduce_prod(i_shapes), kron_a.dtype)
     logdet = 0.
     det_sign = 1.
@@ -151,7 +151,7 @@ def inv(kron_a, name='t3f_kronecker_inv'):
                        'matrices (tt-cores must be square)')
 
   is_batch = isinstance(kron_a, TensorTrainBatch)
-  with tf.name_scope(name, values=kron_a.tt_cores):
+  with tf.compat.v1.name_scope(name, values=kron_a.tt_cores):
     inv_cores = []
     for core_idx in range(kron_a.ndims()):
       core = kron_a.tt_cores[core_idx]
@@ -209,7 +209,7 @@ def cholesky(kron_a, name='t3f_kronecker_cholesky'):
                        'matrices (tt-cores must be square)')
 
   is_batch = isinstance(kron_a, TensorTrainBatch)
-  with tf.name_scope(name, values=kron_a.tt_cores):
+  with tf.compat.v1.name_scope(name, values=kron_a.tt_cores):
     cho_cores = []
     for core_idx in range(kron_a.ndims()):
       core = kron_a.tt_cores[core_idx]

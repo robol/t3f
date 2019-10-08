@@ -18,7 +18,7 @@ def tt_ranks(tt, name='t3f_tt_ranks'):
   """
   num_dims = tt.ndims()
   ranks = []
-  with tf.name_scope(name, values=tt.tt_cores):
+  with tf.compat.v1.name_scope(name, values=tt.tt_cores):
     for i in range(num_dims):
       ranks.append(tf.shape(tt.tt_cores[i])[tt.left_tt_rank_dim])
     ranks.append(tf.shape(tt.tt_cores[-1])[-1])
@@ -41,7 +41,7 @@ def shape(tt, name='t3f_shape'):
   Returns:
     A `Tensor`
   """
-  with tf.name_scope(name, values=tt.tt_cores):
+  with tf.compat.v1.name_scope(name, values=tt.tt_cores):
     tt_raw_shape = raw_shape(tt)
     if tt.is_tt_matrix():
       res = tf.reduce_prod(tt_raw_shape, axis=1)
@@ -75,7 +75,7 @@ def raw_shape(tt, name='t3f_raw_shape'):
   num_dims = tt.ndims()
   num_tensor_axis = len(tt.get_raw_shape())
   final_raw_shape = []
-  with tf.name_scope(name, values=tt.tt_cores):
+  with tf.compat.v1.name_scope(name, values=tt.tt_cores):
     # TODO: ugly.
     from t3f.tensor_train import TensorTrain
     axes_shift = 1 if isinstance(tt, TensorTrain) else 2
@@ -104,7 +104,7 @@ def batch_size(tt, name='t3f_batch_size'):
     raise ValueError('batch size is not available for a TensorTrain object.')
   first_core = tt.tt_cores[0]
   # The first dimension of any TT-core in TensorTrainBatch is the batch size.
-  with tf.name_scope(name, values=tt.tt_cores):
+  with tf.compat.v1.name_scope(name, values=tt.tt_cores):
     return tf.shape(first_core)[0]
 
 
@@ -122,7 +122,7 @@ def lazy_tt_ranks(tt, name='t3f_lazy_tt_ranks'):
   Returns:
     A 1-D numpy array or `tf.Tensor`
   """
-  with tf.name_scope(name, values=tt.tt_cores):
+  with tf.compat.v1.name_scope(name, values=tt.tt_cores):
     static_tt_ranks = tt.get_tt_ranks()
     if static_tt_ranks.is_fully_defined():
       return np.array(static_tt_ranks.as_list())
@@ -144,7 +144,7 @@ def lazy_shape(tt, name='t3f_lazy_shape'):
   Returns:
     A 1-D numpy array or `tf.Tensor`
   """
-  with tf.name_scope(name, values=tt.tt_cores):
+  with tf.compat.v1.name_scope(name, values=tt.tt_cores):
     static_shape = tt.get_shape()
     if static_shape.is_fully_defined():
       return np.array(static_shape.as_list())
@@ -171,7 +171,7 @@ def lazy_raw_shape(tt, name='t3f_lazy_raw_shape'):
   """
   # If get_shape is fully defined, it guaranties that all elements of raw shape
   # are defined.
-  with tf.name_scope(name, values=tt.tt_cores):
+  with tf.compat.v1.name_scope(name, values=tt.tt_cores):
     if tt.get_shape().is_fully_defined():
       return np.array([s.as_list() for s in tt.get_raw_shape()])
     else:
@@ -192,7 +192,7 @@ def lazy_batch_size(tt, name='t3f_lazy_batch_size'):
     ValueError if got `TensorTrain` which doesn't have batch_size as input."""
   if not hasattr(tt, 'batch_size'):
     raise ValueError('batch size is not available for a TensorTrain object.')
-  with tf.name_scope(name, values=tt.tt_cores):
+  with tf.compat.v1.name_scope(name, values=tt.tt_cores):
     if tt.batch_size is not None:
       return tt.batch_size
     else:
@@ -212,7 +212,7 @@ def clean_raw_shape(shape, name='t3f_clean_raw_shape'):
   """
   if shape is None:
     return None
-  with tf.name_scope(name):
+  with tf.compat.v1.name_scope(name):
     if isinstance(shape, tf.TensorShape) or isinstance(shape[0], tf.TensorShape):
       # Assume tf.TensorShape.
       if isinstance(shape, tf.TensorShape):
@@ -274,7 +274,7 @@ def squeeze_batch_dim(tt, name='t3f_squeeze_batch_dim'):
       at compilation stage) or a TensorTrain.
     TensorTrainBatch otherwise.
     """
-  with tf.name_scope(name, values=tt.tt_cores):
+  with tf.compat.v1.name_scope(name, values=tt.tt_cores):
     try:
       if tt.batch_size == 1:
         return tt[0]
@@ -296,7 +296,7 @@ def expand_batch_dim(tt, name='t3f_expand_batch_dim'):
   Returns:
     TensorTrainBatch
   """
-  with tf.name_scope(name, values=tt.tt_cores):
+  with tf.compat.v1.name_scope(name, values=tt.tt_cores):
     if hasattr(tt, 'batch_size'):
       return tt
     else:

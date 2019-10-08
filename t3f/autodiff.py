@@ -152,7 +152,7 @@ def hessian_vector_product(func, x, vector, name='t3f_hessian_vector_product',
         t3f.gradients
     """
   all_cores = list(x.tt_cores) + list(vector.tt_cores)
-  with tf.name_scope(name, values=all_cores):
+  with tf.compat.v1.name_scope(name, values=all_cores):
     left = decompositions.orthogonalize_tt_cores(x)
     right = decompositions.orthogonalize_tt_cores(left, left_to_right=False)
     deltas = [right.tt_cores[0]]

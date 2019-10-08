@@ -57,7 +57,7 @@ def to_tt_matrix(mat, shape, max_tt_rank=10, epsilon=None,
       not a vector of length d + 1 where d is the number of dimensions (rank) of
       the input tensor, if epsilon is less than 0.
   """
-  with tf.name_scope(name, values=(mat,)):
+  with tf.compat.v1.name_scope(name, values=(mat,)):
     mat = tf.convert_to_tensor(mat)
     # In case the shape is immutable.
     shape = list(shape)
@@ -137,7 +137,7 @@ def to_tt_tensor(tens, max_tt_rank=10, epsilon=None,
       and not a vector of length d + 1 where d is the number of dimensions (rank)
       of the input tensor, if epsilon is less than 0.
   """
-  with tf.name_scope(name, values=(tens,)):
+  with tf.compat.v1.name_scope(name, values=(tens,)):
     tens = tf.convert_to_tensor(tens)
     static_shape = tens.get_shape()
     dynamic_shape = tf.shape(tens)
@@ -234,7 +234,7 @@ def round(tt, max_tt_rank=None, epsilon=None, name='t3f_round'):
       the input tensor, if epsilon is less than 0.
   """
   # TODO: add epsilon to the name_scope dependencies.
-  with tf.name_scope(name, values=tt.tt_cores):
+  with tf.compat.v1.name_scope(name, values=tt.tt_cores):
     if isinstance(tt, TensorTrainBatch):
       return _round_batch_tt(tt, max_tt_rank, epsilon)
     else:
@@ -404,7 +404,7 @@ def orthogonalize_tt_cores(tt, left_to_right=True,
   Returns:
     The same type as the input `tt` (TenosorTrain or a TensorTrainBatch).
   """
-  with tf.name_scope(name, values=tt.tt_cores):
+  with tf.compat.v1.name_scope(name, values=tt.tt_cores):
     if isinstance(tt, TensorTrainBatch):
       if left_to_right:
         return _orthogonalize_batch_tt_cores_left_to_right(tt)

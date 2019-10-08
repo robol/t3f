@@ -51,7 +51,7 @@ def get_variable(name,
   # but ignore the ranks.
   # TODO: add validate ranks flag.
 
-  reuse = tf.get_variable_scope().reuse
+  reuse = tf.compat.v1.get_variable_scope().reuse
   if not reuse and initializer is None:
     raise ValueError('Scope reuse is False and initializer is not provided.')
 
@@ -59,7 +59,7 @@ def get_variable(name,
 
   if reuse and not utils.in_eager_mode():
     # Find an existing variable in the collection.
-    path = tf.get_variable_scope().name
+    path = tf.compat.v1.get_variable_scope().name
     if path != '' and path[-1] != '/':
       path += '/'
     path += name
@@ -73,17 +73,17 @@ def get_variable(name,
       raise ValueError('ValueError: Variable %s does not exist, or was not '
                        'created with t3f.get_tt_variable(). Did you mean to '
                        'set reuse=None in VarScope?' % name)
-    with tf.variable_scope(name):
+    with tf.compat.v1.variable_scope(name):
       # Try to get the first core through tf.get_variable to check that we don't
       # violate reuse: it will raise a ValueError otherwise.
-      tf.get_variable('core_0', dtype=dtype)
+      tf.compat.v1.get_variable('core_0', dtype=dtype)
     return found_v
   else:
     # Create new variable.
-    with tf.variable_scope(name):
+    with tf.compat.v1.variable_scope(name):
       num_dims = initializer.ndims()
       for i in range(num_dims):
-        curr_core_var = tf.get_variable('core_%d' % i,
+        curr_core_var = tf.compat.v1.get_variable('core_%d' % i,
                                         initializer=initializer.tt_cores[i],
                                         dtype=dtype, trainable=trainable,
                                         collections=collections,
@@ -100,16 +100,16 @@ def get_variable(name,
 
     # Add the create TensorTrain object into a collection so that we can
     # retrieve it in the future by get_tt_variable('name').
-    tf.add_to_collection('TensorTrainVariables', v)
+    tf.compat.v1.add_to_collection('TensorTrainVariables', v)
 
     # Run the regularizer if requested and save the resulting loss.
     if regularizer:
-      with tf.name_scope(name + "/Regularizer/"):
+      with tf.compat.v1.name_scope(name + "/Regularizer/"):
         loss = regularizer(v)
       if loss is not None:
         tf.logging.vlog(1, "Applied regularizer to %s and added the result %s "
                         "to REGULARIZATION_LOSSES.", v.name, loss.name)
-        tf.add_to_collection(tf.GraphKeys.REGULARIZATION_LOSSES, loss)
+        tf.compat.v1.add_to_collection(tf.GraphKeys.REGULARIZATION_LOSSES, loss)
     return v
 
 
@@ -117,7 +117,7 @@ def assign(ref, value, validate_shape=None, use_locking=None, name=None):
   new_cores = []
   if name is None:
     name = ''
-  with tf.variable_scope(name):
+  with tf.compat.v1.variable_scope(name):
     for i in range(ref.ndims()):
       new_cores.append(tf.assign(ref.tt_cores[i], value.tt_cores[i],
                                  use_locking=use_locking))

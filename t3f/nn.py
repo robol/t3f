@@ -60,12 +60,12 @@ class KerasDense(Layer):
                        '"he", and "lecun"  are supported'
                        % self.kernel_initializer)
     name = 'tt_dense_{}'.format(self.counter)
-    with tf.variable_scope(name):
+    with tf.compat.v1.variable_scope(name):
       self.matrix = t3f.get_variable('matrix', initializer=initializer)
       self.b = None
       if self.use_bias:
         b_init = tf.constant_initializer(self.bias_initializer)
-        self.b = tf.get_variable('bias', shape=self.output_dim,
+        self.b = tf.compat.v1.get_variable('bias', shape=self.output_dim,
                                  initializer=b_init)
     self._trainable_weights = list(self.matrix.tt_cores)
     if self.b is not None:
